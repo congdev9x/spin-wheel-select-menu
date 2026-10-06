@@ -49,14 +49,20 @@
         </nav>
 
         <section class="filter-bar" aria-label="Tùy chọn chọn món">
-          <label class="select-wrap"><span>Cách nấu</span>
-            <select id="method-filter">
-              <option value="all">Tất cả món</option>
-              <option value="Kho / Rim">Kho / Rim</option>
-              <option value="Xào / Rang / Sốt">Xào / Rang / Sốt</option>
-              <option value="Khác">Khác</option>
-            </select>
-          </label>
+          <div class="select-wrap method-filter-wrap">
+            <span>Cách nấu</span>
+            <details class="method-filter" id="method-filter">
+              <summary id="method-filter-summary">Tất cả nhóm</summary>
+              <div class="method-menu">
+                <p class="method-menu-hint">Chọn một hoặc nhiều nhóm để lọc món.</p>
+                <div class="method-menu-actions">
+                  <button id="method-select-all" type="button">Chọn tất cả</button>
+                  <button id="method-clear" type="button">Bỏ chọn hết</button>
+                </div>
+                <div class="method-options" id="method-options" role="group" aria-label="Nhóm cách nấu"></div>
+              </div>
+            </details>
+          </div>
           <label class="select-wrap recent-select"><span>Tránh món đã ăn</span>
             <select id="recent-days">
               <option value="0">Không giới hạn</option>
@@ -98,7 +104,14 @@
                 </div>
               </div>
               <div class="card wheel-list-card">
-                <div class="mini-card-heading"><strong>Các món đang quay</strong><span class="list-count" id="wheel-list-count">0</span></div>
+                <div class="mini-card-heading"><strong>Chọn món để quay</strong><span class="list-count" id="wheel-list-count" aria-label="Số món được chọn">0/0</span></div>
+                <div class="wheel-list-toolbar">
+                  <span class="wheel-list-hint" id="wheel-list-hint" role="status"></span>
+                  <div class="wheel-selection-actions">
+                    <button class="text-button" id="wheel-select-all" type="button">Chọn tất cả</button>
+                    <button class="text-button" id="wheel-clear-selection" type="button">Bỏ chọn hết</button>
+                  </div>
+                </div>
                 <ol class="wheel-list" id="wheel-list"></ol>
               </div>
             </aside>

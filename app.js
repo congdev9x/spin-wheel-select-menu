@@ -70,17 +70,26 @@ function loadState() {
     const value = saved ? JSON.parse(saved) : null;
     if (value && Array.isArray(value.dishes)) {
       hasSavedState = true;
+      const savedPrefs = value.prefs || {};
       return {
         dishes: value.dishes,
         history: Array.isArray(value.history) ? value.history : [],
-        prefs: { method: "all", favoritesOnly: false, recentDays: 3, ...(value.prefs || {}) },
+        prefs: {
+          methods: Object.prototype.hasOwnProperty.call(savedPrefs, "methods")
+            ? savedPrefs.methods
+            : savedPrefs.method && savedPrefs.method !== "all" ? [savedPrefs.method] : "all",
+          wheelDishIds: "all",
+          favoritesOnly: false,
+          recentDays: 3,
+          ...savedPrefs,
+        },
         catalog: mergeCatalog(value.catalog),
       };
     }
   } catch (error) {
     console.warn("Không thể đọc danh sách đã lưu", error);
   }
-  return { dishes: [], history: [], prefs: { method: "all", favoritesOnly: false, recentDays: 3 }, catalog: mergeCatalog() };
+  return { dishes: [], history: [], prefs: { methods: "all", wheelDishIds: "all", favoritesOnly: false, recentDays: 3 }, catalog: mergeCatalog() };
 }
 
 const state = loadState();
@@ -92,8 +101,19 @@ state.dishes = state.dishes.map((dish, index) => ({
   role: resolveCategoryId(state.catalog.roles, normalizeRole(dish.role || dish.mealType || dish.type), "main", "role"),
   favorite: Boolean(dish.favorite),
 })).filter((dish) => dish.name);
-if (state.prefs.method !== "all") state.prefs.method = resolveCategoryId(state.catalog.methods, state.prefs.method, "other-method", "method");
+if (!Array.isArray(state.prefs.methods) && state.prefs.methods !== "all") state.prefs.methods = "all";
+if (Array.isArray(state.prefs.methods)) {
+  state.prefs.methods = [...new Set(state.prefs.methods.map((id) => resolveCategoryId(state.catalog.methods, id, "other-method", "method")))];
+}
+delete state.prefs.method;
+if (state.prefs.wheelDishIds !== "all" && !Array.isArray(state.prefs.wheelDishIds)) state.prefs.wheelDishIds = "all";
+if (Array.isArray(state.prefs.wheelDishIds)) {
+  const dishIds = new Set(state.dishes.map((dish) => dish.id));
+  state.prefs.wheelDishIds = [...new Set(state.prefs.wheelDishIds.map(String))].filter((id) => dishIds.has(id));
+  if (state.prefs.wheelDishIds.length === state.dishes.length) state.prefs.wheelDishIds = "all";
+}
 let wheelItems = [];
+let wheelCandidates = [];
 let wheelRotation = 0;
 let pendingWheelDishId = null;
 let currentView = "wheel-view";
@@ -110,6 +130,10 @@ const elements = {
   dishCount: $("#dish-count"),
   favoriteCount: $("#favorite-count"),
   methodFilter: $("#method-filter"),
+  methodFilterSummary: $("#method-filter-summary"),
+  methodOptions: $("#method-options"),
+  methodSelectAll: $("#method-select-all"),
+  methodClear: $("#method-clear"),
   recentDays: $("#recent-days"),
   favoritesOnly: $("#favorites-only"),
   filterNote: $("#filter-note"),
@@ -118,6 +142,9 @@ const elements = {
   wheelAvailable: $("#wheel-available"),
   wheelList: $("#wheel-list"),
   wheelListCount: $("#wheel-list-count"),
+  wheelListHint: $("#wheel-list-hint"),
+  wheelSelectAll: $("#wheel-select-all"),
+  wheelClearSelection: $("#wheel-clear-selection"),
   wheelPlaceholder: $("#wheel-placeholder"),
   wheelResult: $("#wheel-result"),
   wheelResultName: $("#wheel-result-name"),
@@ -186,13 +213,37 @@ function resetMealPlan() {
   mealPlan = Object.fromEntries(mealRoles().map((role) => [role.id, null]));
 }
 
+function methodSelectionLabel() {
+  if (state.prefs.methods === "all") return "Tất cả nhóm";
+  if (!state.prefs.methods.length) return "Không chọn nhóm";
+  if (state.prefs.methods.length === 1) {
+    return state.catalog.methods.find((method) => method.id === state.prefs.methods[0])?.label || "1 nhóm";
+  }
+  return `${state.prefs.methods.length} nhóm đã chọn`;
+}
+
 function renderCategorySelects() {
   const currentDishMethod = elements.dishMethod.value;
   const currentDishRole = elements.dishRole.value;
-  elements.methodFilter.innerHTML = `<option value="all">Tất cả món</option>${state.catalog.methods.map((method) => `<option value="${escapeHtml(method.id)}">${escapeHtml(method.label)}</option>`).join("")}`;
+  const activeFilterControl = elements.methodFilter.contains(document.activeElement) ? {
+    id: document.activeElement.id,
+    value: document.activeElement.value,
+  } : null;
+  const selectedMethods = state.prefs.methods === "all" ? null : new Set(state.prefs.methods);
+  elements.methodOptions.innerHTML = state.catalog.methods.map((method) => {
+    const checked = !selectedMethods || selectedMethods.has(method.id);
+    return '<label class="method-option"><input type="checkbox" data-method-filter-option value="' + escapeHtml(method.id) + '"' + (checked ? " checked" : "") + '><span>' + escapeHtml(method.label) + '</span></label>';
+  }).join("");
+  elements.methodFilterSummary.textContent = methodSelectionLabel();
+  elements.methodFilterSummary.setAttribute("aria-label", `Cách nấu: ${methodSelectionLabel()}. Mở để thay đổi.`);
   elements.dishMethod.innerHTML = state.catalog.methods.map((method) => `<option value="${escapeHtml(method.id)}">${escapeHtml(method.label)}</option>`).join("");
   elements.dishRole.innerHTML = state.catalog.roles.map((role) => `<option value="${escapeHtml(role.id)}">${escapeHtml(role.label)}</option>`).join("");
-  elements.methodFilter.value = state.prefs.method === "all" || state.catalog.methods.some((method) => method.id === state.prefs.method) ? state.prefs.method : "all";
+  if (activeFilterControl) {
+    const nextFocus = activeFilterControl.id
+      ? document.getElementById(activeFilterControl.id)
+      : [...elements.methodOptions.querySelectorAll("[data-method-filter-option]")].find((input) => input.value === activeFilterControl.value);
+    nextFocus?.focus();
+  }
   elements.dishMethod.value = state.catalog.methods.some((method) => method.id === currentDishMethod) ? currentDishMethod : (state.catalog.methods[0]?.id || "");
   elements.dishRole.value = state.catalog.roles.some((role) => role.id === currentDishRole) ? currentDishRole : (state.catalog.roles[0]?.id || "");
 }
@@ -214,7 +265,7 @@ function getRecentIds(days = Number(state.prefs.recentDays)) {
 
 function filterDishes({ role, ignoreRecent = false } = {}) {
   const base = state.dishes.filter((dish) => {
-    if (state.prefs.method !== "all" && dish.method !== state.prefs.method) return false;
+    if (state.prefs.methods !== "all" && !state.prefs.methods.includes(dish.method)) return false;
     if (state.prefs.favoritesOnly && !dish.favorite) return false;
     if (role && dish.role !== role) return false;
     return true;
@@ -266,7 +317,9 @@ function renderCounts() {
   elements.favoriteCount.textContent = state.dishes.filter((dish) => dish.favorite).length;
   elements.manageCount.textContent = `${state.dishes.length} món`;
   const recent = Number(state.prefs.recentDays);
-  elements.filterNote.textContent = recent ? `Ưu tiên món chưa ăn trong ${recent} ngày` : "Không giới hạn lịch sử";
+  const methodCount = state.prefs.methods === "all" ? 0 : state.prefs.methods.length;
+  const methodNote = state.prefs.methods === "all" ? "" : methodCount ? `${methodCount} cách nấu · ` : "Không có cách nấu · ";
+  elements.filterNote.textContent = methodNote + (recent ? `Ưu tiên món chưa ăn trong ${recent} ngày` : "Không giới hạn lịch sử");
 }
 
 function drawWheel(items) {
@@ -317,7 +370,10 @@ function renderWheel() {
     window.clearTimeout(wheelSpinTimer);
     wheelSpinTimer = null;
   }
-  wheelItems = filterDishes();
+  const activeWheelOption = elements.wheelList.contains(document.activeElement) ? document.activeElement.value : null;
+  wheelCandidates = filterDishes();
+  const selectedWheelDishIds = state.prefs.wheelDishIds === "all" ? null : new Set(state.prefs.wheelDishIds);
+  wheelItems = selectedWheelDishIds ? wheelCandidates.filter((dish) => selectedWheelDishIds.has(dish.id)) : wheelCandidates;
   wheelRotation = 0;
   elements.canvas.style.transition = "none";
   elements.canvas.style.transform = "rotate(0deg)";
@@ -325,16 +381,26 @@ function renderWheel() {
   drawWheel(wheelItems);
   renderMethodLegend();
   elements.wheelAvailable.textContent = `${wheelItems.length} món có thể chọn`;
-  elements.wheelListCount.textContent = wheelItems.length;
-  if (wheelItems.length) {
-    elements.wheelList.innerHTML = wheelItems.map((dish, index) => {
+  elements.wheelListCount.textContent = `${wheelItems.length}/${wheelCandidates.length}`;
+  elements.wheelListCount.setAttribute("aria-label", `${wheelItems.length} trong ${wheelCandidates.length} món được chọn`);
+  elements.wheelSelectAll.disabled = state.prefs.wheelDishIds === "all";
+  elements.wheelClearSelection.disabled = state.prefs.wheelDishIds !== "all" && state.prefs.wheelDishIds.length === 0;
+  if (wheelCandidates.length) {
+    elements.wheelListHint.textContent = wheelItems.length
+      ? `Đang chọn ${wheelItems.length} / ${wheelCandidates.length} món`
+      : "Chưa chọn món nào. Đánh dấu ít nhất một món để quay.";
+    elements.wheelList.innerHTML = wheelCandidates.map((dish, index) => {
       const method = state.catalog.methods.find((item) => item.id === dish.method);
-      return `<li data-dish-id="${escapeHtml(dish.id)}"><span class="dish-number">${String(index + 1).padStart(2, "0")}</span><span>${escapeHtml(dish.name)}</span><i class="dish-dot" style="--method-color:${escapeHtml(method?.color?.fill || "#768c60")}"></i></li>`;
+      const checked = state.prefs.wheelDishIds === "all" || state.prefs.wheelDishIds.includes(dish.id);
+      return `<li class="${checked ? "is-included" : "is-excluded"}" data-dish-id="${escapeHtml(dish.id)}"><input class="wheel-dish-toggle" type="checkbox" data-wheel-selection-option value="${escapeHtml(dish.id)}" aria-label="Cho ${escapeHtml(dish.name)} tham gia vòng quay" ${checked ? "checked" : ""}><span class="dish-number">${String(index + 1).padStart(2, "0")}</span><span class="wheel-dish-name">${escapeHtml(dish.name)}</span><i class="dish-dot" style="--method-color:${escapeHtml(method?.color?.fill || "#768c60")}"></i></li>`;
     }).join("");
-    elements.spin.disabled = false;
   } else {
+    elements.wheelListHint.textContent = "Không có món phù hợp với bộ lọc hiện tại.";
     elements.wheelList.innerHTML = '<li class="empty-inline">Không có món phù hợp. Hãy đổi bộ lọc hoặc thêm món.</li>';
-    elements.spin.disabled = true;
+  }
+  elements.spin.disabled = !wheelItems.length;
+  if (activeWheelOption) {
+    [...elements.wheelList.querySelectorAll("[data-wheel-selection-option]")].find((input) => input.value === activeWheelOption)?.focus();
   }
   pendingWheelDishId = null;
   elements.wheelPlaceholder.hidden = false;
@@ -566,7 +632,10 @@ function deleteCategory(type, id) {
   if (!window.confirm(message)) return;
   if (usedCount) state.dishes.forEach((dish) => { if (dish[type] === id) dish[type] = fallbackId; });
   if (type === "role") delete mealPlan[id];
-  if (type === "method" && state.prefs.method === id) state.prefs.method = "all";
+  if (type === "method" && Array.isArray(state.prefs.methods) && state.prefs.methods.includes(id)) {
+    const remainingMethods = state.prefs.methods.filter((methodId) => methodId !== id);
+    state.prefs.methods = remainingMethods.length ? remainingMethods : "all";
+  }
   if (type === "method") state.catalog.methods = items.filter((item) => item.id !== id);
   else state.catalog.roles = items.filter((item) => item.id !== id);
   persist();
@@ -779,7 +848,8 @@ async function reloadStarterCsv() {
     const dishes = await readStarterCsv();
     snapshotHistoryNames();
     state.dishes = dishes;
-    state.prefs.method = "all";
+    state.prefs.methods = "all";
+    state.prefs.wheelDishIds = "all";
     resetMealPlan();
     persist();
     resetDishForm();
@@ -803,7 +873,8 @@ function importData(file) {
       const normalized = normalizeImportedDishes(validRows);
       snapshotHistoryNames();
       state.dishes = normalized;
-      state.prefs.method = "all";
+      state.prefs.methods = "all";
+      state.prefs.wheelDishIds = "all";
       resetMealPlan();
       persist();
       resetDishForm();
@@ -847,6 +918,10 @@ function removeDish(id) {
   if (!dish || !window.confirm(`Xóa “${dish.name}” khỏi danh sách món?`)) return;
   snapshotHistoryNames();
   state.dishes = state.dishes.filter((item) => item.id !== id);
+  if (Array.isArray(state.prefs.wheelDishIds)) {
+    state.prefs.wheelDishIds = state.prefs.wheelDishIds.filter((dishId) => dishId !== id);
+    if (state.prefs.wheelDishIds.length === state.dishes.length) state.prefs.wheelDishIds = "all";
+  }
   for (const role of Object.keys(mealPlan)) if (mealPlan[role] === id) mealPlan[role] = null;
   if (pendingWheelDishId === id) pendingWheelDishId = null;
   persist();
@@ -864,14 +939,52 @@ function addRole(role) {
 function initialize() {
   elements.today.textContent = new Intl.DateTimeFormat("vi-VN", { weekday: "long", day: "numeric", month: "long" }).format(new Date());
   renderCategorySelects();
-  elements.methodFilter.value = state.prefs.method;
   elements.recentDays.value = String(state.prefs.recentDays);
   elements.favoritesOnly.checked = Boolean(state.prefs.favoritesOnly);
   $(".mode-tabs").addEventListener("click", (event) => {
     const tab = event.target.closest("[data-view]");
     if (tab) setView(tab.dataset.view);
   });
-  elements.methodFilter.addEventListener("change", () => { state.prefs.method = elements.methodFilter.value; persist(); renderAll(); });
+  elements.methodOptions.addEventListener("change", (event) => {
+    const option = event.target.closest("[data-method-filter-option]");
+    if (!option) return;
+    const selected = state.prefs.methods === "all"
+      ? state.catalog.methods.map((method) => method.id)
+      : [...state.prefs.methods];
+    const next = new Set(selected);
+    if (option.checked) next.add(option.value);
+    else next.delete(option.value);
+    const selectedMethods = [...next];
+    state.prefs.methods = selectedMethods.length === state.catalog.methods.length ? "all" : selectedMethods;
+    persist();
+    renderAll();
+  });
+  elements.methodSelectAll.addEventListener("click", () => { state.prefs.methods = "all"; persist(); renderAll(); });
+  elements.methodClear.addEventListener("click", () => { state.prefs.methods = []; persist(); renderAll(); });
+  elements.wheelList.addEventListener("change", (event) => {
+    const option = event.target.closest("[data-wheel-selection-option]");
+    if (!option) return;
+    const selected = new Set(state.prefs.wheelDishIds === "all"
+      ? state.dishes.map((dish) => dish.id)
+      : state.prefs.wheelDishIds);
+    if (option.checked) selected.add(option.value);
+    else selected.delete(option.value);
+    const selectedIds = [...selected];
+    state.prefs.wheelDishIds = selectedIds.length === state.dishes.length ? "all" : selectedIds;
+    persist();
+    renderAll();
+  });
+  elements.wheelSelectAll.addEventListener("click", () => { state.prefs.wheelDishIds = "all"; persist(); renderAll(); });
+  elements.wheelClearSelection.addEventListener("click", () => { state.prefs.wheelDishIds = []; persist(); renderAll(); });
+  document.addEventListener("click", (event) => {
+    if (!elements.methodFilter.contains(event.target)) elements.methodFilter.open = false;
+  });
+  elements.methodFilter.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && elements.methodFilter.open) {
+      elements.methodFilter.open = false;
+      elements.methodFilterSummary.focus();
+    }
+  });
   elements.recentDays.addEventListener("change", () => { state.prefs.recentDays = Number(elements.recentDays.value); persist(); renderAll(); });
   elements.favoritesOnly.addEventListener("change", () => { state.prefs.favoritesOnly = elements.favoritesOnly.checked; persist(); renderAll(); });
   elements.spin.addEventListener("click", spinWheel);

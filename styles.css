@@ -63,12 +63,29 @@ h1 { margin: 0 0 7px; font: 800 clamp(36px, 4.2vw, 49px)/1.08 Manrope, sans-seri
 .mode-tab:hover, .mode-tab.is-active { color: var(--green); }
 .mode-tab.is-active::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 3px; border-radius: 3px 3px 0 0; background: var(--green); content: ""; }
 
-.filter-bar { display: flex; align-items: center; gap: 10px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.filter-bar { position: relative; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 14px 0; border-bottom: 1px solid var(--line); }
 .select-wrap { min-width: 185px; min-height: 44px; display: flex; align-items: center; gap: 9px; padding: 0 11px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .select-wrap:focus-within { border-color: var(--green); box-shadow: 0 0 0 3px rgba(40, 115, 75, .12); }
 .select-wrap > span { color: var(--muted); font-size: 12px; white-space: nowrap; }
 .select-wrap select { min-width: 0; max-width: 185px; border: 0; outline: 0; color: var(--ink); background: transparent; font-size: 14px; font-weight: 700; }
 .select-wrap select:focus-visible { outline: 0; }
+.method-filter-wrap { position: relative; min-width: 225px; flex: 0 1 250px; }
+.method-filter { min-width: 0; flex: 1; }
+.method-filter summary { min-height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 9px; color: var(--ink); font-size: 14px; font-weight: 700; cursor: pointer; list-style: none; }
+.method-filter summary::-webkit-details-marker { display: none; }
+.method-filter summary::after { width: 8px; height: 8px; flex: 0 0 8px; transform: rotate(45deg) translateY(-2px); border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); content: ""; transition: transform .15s; }
+.method-filter[open] summary::after { transform: rotate(225deg) translateY(-1px); }
+.method-filter summary:focus-visible { outline: 3px solid rgba(40, 115, 75, .42); outline-offset: 3px; border-radius: 3px; }
+.method-menu { position: absolute; z-index: 20; top: calc(100% + 8px); left: 0; width: min(320px, calc(100vw - 28px)); padding: 12px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); box-shadow: 0 12px 26px rgba(36, 53, 43, .18); }
+.method-menu-hint { margin: 0 0 9px; color: var(--muted); font-size: 13px; line-height: 1.4; }
+.method-menu-actions { display: flex; gap: 7px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.method-menu-actions button { min-height: 34px; padding: 0 10px; border: 0; border-radius: 8px; color: var(--green); background: var(--green-wash); font-size: 13px; font-weight: 700; }
+.method-menu-actions button:hover { background: rgba(40, 115, 75, .16); }
+.method-options { max-height: min(270px, 42dvh); overflow-y: auto; padding-top: 5px; scrollbar-color: rgba(40, 115, 75, .28) transparent; scrollbar-width: thin; }
+.method-option { min-height: 38px; display: flex; align-items: center; gap: 9px; padding: 4px 5px; border-radius: 7px; color: var(--ink); font-size: 14px; cursor: pointer; }
+.method-option:hover { background: var(--green-wash); }
+.method-option input { width: 17px; height: 17px; flex: 0 0 17px; margin: 0; accent-color: var(--green); }
+.method-option span { min-width: 0; }
 .favorite-toggle { display: flex; align-items: center; gap: 8px; margin-left: 3px; color: var(--ink); font-size: 14px; cursor: pointer; }
 .favorite-toggle input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; clip-path: inset(50%); }
 .switch { position: relative; width: 34px; height: 20px; flex: 0 0 34px; border-radius: 20px; background: rgba(36, 53, 43, .2); transition: background .15s; }
@@ -118,8 +135,15 @@ h1 { margin: 0 0 7px; font: 800 clamp(36px, 4.2vw, 49px)/1.08 Manrope, sans-seri
 .mini-card-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .mini-card-heading strong { font: 700 16px Manrope, sans-serif; }
 .list-count { min-width: 28px; height: 28px; display: grid; place-items: center; padding: 0 8px; border-radius: 30px; color: var(--green); background: var(--green-wash); font-size: 13px; font-weight: 800; }
+.wheel-list-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; }
+.wheel-list-hint { min-width: 0; color: var(--muted); font-size: 12px; line-height: 1.35; }
+.wheel-selection-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 9px; white-space: nowrap; }
+.wheel-selection-actions .text-button { padding: 4px 0; font-size: 12px; }
 .wheel-list { max-height: 195px; overflow-y: auto; margin: 10px 0 0; padding: 6px 0 0; border-top: 1px solid var(--line); list-style: none; scrollbar-color: rgba(40, 115, 75, .28) transparent; scrollbar-width: thin; }
-.wheel-list li { min-height: 31px; display: grid; grid-template-columns: 28px minmax(0, 1fr) 9px; align-items: center; gap: 9px; color: var(--ink); font-size: 14px; }
+.wheel-list li { min-height: 31px; display: grid; grid-template-columns: 18px 28px minmax(0, 1fr) 9px; align-items: center; gap: 7px; color: var(--ink); font-size: 14px; }
+.wheel-list li.is-excluded { color: var(--muted); }
+.wheel-dish-toggle { width: 16px; height: 16px; margin: 0; accent-color: var(--green); cursor: pointer; }
+.wheel-dish-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .wheel-list .dish-number { color: var(--muted); font-variant-numeric: tabular-nums; }
 .wheel-list .dish-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--method-color, var(--turmeric)); }
 .wheel-list .winner-row { color: var(--green); font-weight: 800; }
@@ -285,6 +309,10 @@ h1 { margin: 0 0 7px; font: 800 clamp(36px, 4.2vw, 49px)/1.08 Manrope, sans-seri
   .select-wrap { min-width: 0; min-height: 57px; align-items: flex-start; flex-direction: column; justify-content: center; gap: 1px; padding: 5px 9px; }
   .select-wrap > span { font-size: 12px; }
   .select-wrap select { width: 100%; max-width: 100%; padding: 0; font-size: 13px; }
+  .method-filter-wrap { min-width: 0; width: 100%; }
+  .method-filter { width: 100%; }
+  .method-filter summary { min-height: 28px; width: 100%; font-size: 13px; }
+  .method-menu { width: min(320px, calc(100vw - 28px)); }
   .favorite-toggle { grid-column: 1; gap: 7px; font-size: 13px; }
   .switch { width: 32px; flex-basis: 32px; }
   .favorite-toggle input:checked + .switch::after { transform: translateX(12px); }
