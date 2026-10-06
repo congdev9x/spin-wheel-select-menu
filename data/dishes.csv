@@ -1,0 +1,144 @@
+id,name,method,role,favorite
+seed-1,Ba chỉ kho tiêu,Kho / Rim,main,false
+seed-2,Ba chỉ rim nước mắm,Kho / Rim,main,false
+seed-3,Ba chỉ rim tiêu,Kho / Rim,main,false
+seed-4,Chân giò / đuôi lợn kho riềng,Kho / Rim,main,false
+seed-5,Chân giò / đuôi lợn kho tương,Kho / Rim,main,false
+seed-6,Giả cầy chân giò,Kho / Rim,main,false
+seed-7,Giò rim mắm tỏi ớt,Kho / Rim,main,false
+seed-8,Sườn non rim mặn ngọt,Kho / Rim,main,false
+seed-9,Thịt băm rim nước mắm,Kho / Rim,main,false
+seed-10,Thịt băm rim tiêu,Kho / Rim,main,false
+seed-11,Thịt heo rim nước mắm,Kho / Rim,main,false
+seed-12,Thịt heo rim sả ớt,Kho / Rim,main,false
+seed-13,Thịt heo rim tiêu xanh,Kho / Rim,main,false
+seed-14,Thịt kho dưa chua,Kho / Rim,main,false
+seed-15,Thịt kho khóm (dứa),Kho / Rim,main,false
+seed-16,Thịt kho tàu (trứng cút / củ cải / trám / sung),Kho / Rim,main,false
+seed-17,Ba chỉ xào dưa chua,Xào / Rang / Sốt,main,false
+seed-18,Bắp cải cuộn thịt sốt cà chua,Xào / Rang / Sốt,main,false
+seed-19,Nấm rơm xào thịt băm,Xào / Rang / Sốt,main,false
+seed-20,Sườn xào chua ngọt,Xào / Rang / Sốt,main,false
+seed-21,Thịt băm chưng trứng,Xào / Rang / Sốt,main,false
+seed-22,Thịt băm sốt mắm tỏi,Xào / Rang / Sốt,main,false
+seed-23,Thịt băm xào giá,Xào / Rang / Sốt,main,false
+seed-24,Thịt băm xào hành tây,Xào / Rang / Sốt,main,false
+seed-25,Thịt băm xào ngô ngọt,Xào / Rang / Sốt,main,false
+chicken-01,Cánh gà rim nước mắm,Kho / Rim,main,false
+chicken-02,Gà kho gừng,Kho / Rim,main,false
+chicken-03,Gà kho sả,Kho / Rim,main,false
+chicken-04,Gà rim mật ong,Kho / Rim,main,false
+chicken-05,Gà rim nước mắm,Kho / Rim,main,false
+chicken-06,Gà rim tiêu,Kho / Rim,main,false
+chicken-07,Cánh gà rang tỏi,Xào / Rang / Sốt,main,false
+chicken-08,Cánh gà sốt me,Xào / Rang / Sốt,main,false
+chicken-09,Cổ gà rang muối,Xào / Rang / Sốt,main,false
+chicken-10,Đùi gà áp chảo sốt tiêu,Xào / Rang / Sốt,main,false
+chicken-11,Gà rang muối,Xào / Rang / Sốt,main,false
+chicken-12,Gà rang nghệ,Xào / Rang / Sốt,main,false
+chicken-13,Gà rang sả,Xào / Rang / Sốt,main,false
+chicken-14,Gà rang tỏi,Xào / Rang / Sốt,main,false
+chicken-15,Gà xào bắp cải,Xào / Rang / Sốt,main,false
+chicken-16,Gà xào cải chua,Xào / Rang / Sốt,main,false
+chicken-17,Gà xào giá,Xào / Rang / Sốt,main,false
+chicken-18,Gà xào hành tây,Xào / Rang / Sốt,main,false
+noodle-01,Cháo cá,Cháo,main,false
+noodle-02,Cháo gà,Cháo,main,false
+noodle-03,Cháo thịt băm,Cháo,main,false
+noodle-04,Cháo trứng,Cháo,main,false
+noodle-05,Cháo đậu xanh thịt băm,Cháo,main,false
+noodle-06,Phở cuốn thập cẩm,Phở,main,false
+noodle-07,Phở gà,Phở,main,false
+noodle-08,Phở trộn,Phở,main,false
+noodle-09,Bún chả,Bún,main,false
+noodle-10,Bún cá rô đồng,Bún,main,false
+noodle-11,Bún măng vịt,Bún,main,false
+noodle-12,Bún riêu cua,Bún,main,false
+noodle-13,Bún vịt om sấu,Bún,main,false
+noodle-14,Bún đậu mắm tôm,Bún,main,false
+noodle-15,Canh bún rau củ,Bún,main,false
+noodle-16,Miến gà / thịt,Mì / Miến,main,false
+noodle-17,Miến trộn Hàn Quốc (Japchae),Mì / Miến,main,false
+noodle-18,Miến xào rau,Mì / Miến,main,false
+noodle-19,Miến xào trứng,Mì / Miến,main,false
+noodle-20,Mì tôm,Mì / Miến,main,false
+noodle-21,Mì tương đen,Mì / Miến,main,false
+noodle-22,Mì xào rau cải,Mì / Miến,main,false
+vegetarian-02,Nấm rơm kho tiêu,Kho / Rim,vegetable,false
+vegetarian-03,Nấm đùi gà kho gừng,Kho / Rim,vegetable,false
+vegetarian-04,Mít non kho nước dừa,Kho / Rim,vegetable,false
+vegetarian-05,Măng kho nấm,Kho / Rim,vegetable,false
+vegetarian-06,Rau củ kho chay,Kho / Rim,vegetable,false
+vegetarian-07,Đậu hũ rim nước tương,Kho / Rim,main,false
+vegetarian-08,Củ cải kho nấm,Kho / Rim,vegetable,false
+vegetarian-09,Nấm bào ngư xào sả ớt,Xào / Rang / Sốt,vegetable,false
+vegetarian-10,Rau củ xào thập cẩm,Xào / Rang / Sốt,vegetable,false
+vegetarian-11,Cải thìa xào nấm đông cô,Xào / Rang / Sốt,vegetable,false
+vegetarian-12,Bông cải xào nấm,Xào / Rang / Sốt,vegetable,false
+vegetarian-13,Đậu que xào nấm,Xào / Rang / Sốt,vegetable,false
+vegetarian-14,Mì căn xào sả ớt,Xào / Rang / Sốt,main,false
+vegetarian-15,Nấm sốt tiêu xanh,Xào / Rang / Sốt,vegetable,false
+vegetarian-16,Đậu hũ sốt sa tế chay,Xào / Rang / Sốt,main,false
+vegetarian-17,Chả giò chay,Chiên / Rán,main,false
+vegetarian-18,Nấm kim châm chiên giòn,Chiên / Rán,main,false
+vegetarian-19,Đậu hũ chiên giòn sốt chua ngọt,Chiên / Rán,main,false
+vegetarian-20,Bánh xèo chay,Chiên / Rán,main,false
+vegetarian-21,Rau củ hấp chấm kho quẹt chay,Luộc / Hấp,vegetable,false
+vegetarian-22,Nấm hấp sả,Luộc / Hấp,vegetable,false
+vegetarian-23,Canh chua chay,Canh,soup,false
+vegetarian-24,Canh khổ qua hầm chay,Canh,soup,false
+vegetarian-25,Canh bí đỏ đậu phộng,Canh,soup,false
+vegetarian-26,Canh nấm rau củ,Canh,soup,false
+vegetarian-27,Canh bầu nấu nấm,Canh,soup,false
+vegetarian-28,Canh cải thảo nấm,Canh,soup,false
+vegetarian-29,Gỏi ngó sen chay,Trộn / Cuốn,vegetable,false
+vegetarian-30,Gỏi bắp chuối chay,Trộn / Cuốn,vegetable,false
+vegetarian-31,Gỏi cuốn chay,Trộn / Cuốn,vegetable,false
+vegetarian-32,Bún riêu chay,Món Khác,main,false
+vegetarian-33,Hủ tiếu chay,Món Khác,main,false
+vegetarian-34,Cháo nấm chay,Món Khác,main,false
+vegetarian-35,Cơm chiên chay,Xào / Rang / Sốt,main,false
+soup-02,Canh bí đỏ hầm xương,Canh sườn & Xương,soup,false
+soup-03,Canh khoai sọ nấu xương,Canh sườn & Xương,soup,false
+soup-04,Canh rau ngót nấu sườn,Canh sườn & Xương,soup,false
+soup-05,Canh sườn chua,Canh sườn & Xương,soup,false
+soup-06,Canh sườn ngũ quả,Canh sườn & Xương,soup,false
+soup-07,Canh bắp cải thịt băm,Canh thịt băm & Mọc,soup,false
+soup-08,Canh bầu thịt băm,Canh thịt băm & Mọc,soup,false
+soup-09,Canh bí xanh thịt băm,Canh thịt băm & Mọc,soup,false
+soup-10,Canh cà chua thịt băm,Canh thịt băm & Mọc,soup,false
+soup-11,Canh cải thịt băm,Canh thịt băm & Mọc,soup,false
+soup-12,Canh chua thịt băm,Canh thịt băm & Mọc,soup,false
+soup-13,Canh khoai mỡ thịt băm,Canh thịt băm & Mọc,soup,false
+soup-14,Canh kim chi thịt băm đậu hũ,Canh thịt băm & Mọc,soup,false
+soup-15,Canh mọc rau củ nấm,Canh thịt băm & Mọc,soup,false
+soup-16,Canh mướp thịt băm,Canh thịt băm & Mọc,soup,false
+soup-17,Canh mướp đắng nhồi thịt,Canh thịt băm & Mọc,soup,false
+soup-18,Canh rau cải thịt băm,Canh thịt băm & Mọc,soup,false
+soup-19,Canh rau dền thịt băm,Canh thịt băm & Mọc,soup,false
+soup-20,Canh rau ngót thịt băm,Canh thịt băm & Mọc,soup,false
+soup-21,Canh cá nấu dưa chua,Canh cá & Thủy hải sản,soup,false
+soup-22,Canh cá nấu khế,Canh cá & Thủy hải sản,soup,false
+soup-23,Canh cá nấu măng,Canh cá & Thủy hải sản,soup,false
+soup-24,Canh cá nấu sấu,Canh cá & Thủy hải sản,soup,false
+soup-25,Canh chua cá,Canh cá & Thủy hải sản,soup,false
+soup-26,Canh cà bung,Canh cua & Đồng quê,soup,false
+soup-27,Canh cua mồng tơi rau đay mướp,Canh cua & Đồng quê,soup,false
+soup-28,Canh riêu cua,Canh cua & Đồng quê,soup,false
+soup-29,Canh bắp cải,Canh rau & Thanh nhiệt,soup,false
+soup-30,Canh bầu,Canh rau & Thanh nhiệt,soup,false
+soup-31,Canh bí đao,Canh rau & Thanh nhiệt,soup,false
+soup-32,Canh bí đỏ,Canh rau & Thanh nhiệt,soup,false
+soup-33,Canh bí đỏ trứng,Canh rau & Thanh nhiệt,soup,false
+soup-34,Canh cà chua trứng,Canh rau & Thanh nhiệt,soup,false
+duck-01,Ngan luộc,Luộc / Hấp,main,false
+duck-02,Vịt luộc,Luộc / Hấp,main,false
+duck-03,Ngan lọc lườn xào lăn sả ớt,Xào / Rang / Sốt,main,false
+duck-04,Vịt xào măng,Xào / Rang / Sốt,main,false
+duck-05,Vịt xào sả ớt,Xào / Rang / Sốt,main,false
+duck-06,Ngan nấu giả cầy,Kho / Rim,main,false
+duck-07,Vịt quay,Nướng / Quay,main,false
+duck-08,Vịt kho gừng,Kho / Rim,main,false
+duck-09,Vịt om sấu,Hầm / Om / Nấu,main,false
+duck-10,Ngan cháy tỏi,Xào / Rang / Sốt,main,false
+duck-11,Gỏi vịt bắp cải,Trộn / Cuốn,vegetable,false

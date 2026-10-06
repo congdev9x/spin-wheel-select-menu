@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f8f2" />
+    <title>Bếp quyết định — Hôm nay ăn gì?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="Bếp quyết định, về đầu trang">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 20.5h18l-1.7 7H10.7L9 20.5Z" fill="currentColor" />
+              <path d="M7.5 19.5h21M18 7v3m-6.5 1.5 1.7 2m11.8-2-1.7 2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+              <path d="M13 24.5h10" stroke="#F0B83F" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span class="brand-copy"><strong>Bếp quyết định</strong><small>Chọn món vui hơn</small></span>
+        </a>
+        <div class="topbar-actions">
+          <span class="today-label" id="today-label"></span>
+          <button class="button button-quiet manage-open" type="button"><span aria-hidden="true">＋</span> Quản lý món</button>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="hero">
+          <div class="hero-copy">
+            <h1>Hôm nay ăn gì?</h1>
+            <p>Quay một vòng để chọn nhanh, hoặc cùng cả nhà đấu món mình thích.</p>
+          </div>
+          <div class="hero-stats" aria-label="Thống kê danh sách">
+            <div class="stat-item"><strong id="dish-count">0</strong><span>món nhà mình</span></div>
+            <div class="stat-item"><strong id="favorite-count">0</strong><span>món yêu thích</span></div>
+          </div>
+        </section>
+
+        <nav class="mode-tabs" aria-label="Chế độ chọn món">
+          <button class="mode-tab is-active" type="button" data-view="wheel-view">Vòng quay</button>
+          <button class="mode-tab" type="button" data-view="battle-view">Đấu món</button>
+          <button class="mode-tab" type="button" data-view="meal-view">Lập mâm</button>
+        </nav>
+
+        <section class="filter-bar" aria-label="Tùy chọn chọn món">
+          <label class="select-wrap"><span>Cách nấu</span>
+            <select id="method-filter">
+              <option value="all">Tất cả món</option>
+              <option value="Kho / Rim">Kho / Rim</option>
+              <option value="Xào / Rang / Sốt">Xào / Rang / Sốt</option>
+              <option value="Khác">Khác</option>
+            </select>
+          </label>
+          <label class="select-wrap recent-select"><span>Tránh món đã ăn</span>
+            <select id="recent-days">
+              <option value="0">Không giới hạn</option>
+              <option value="3" selected>Trong 3 ngày</option>
+              <option value="7">Trong 7 ngày</option>
+              <option value="14">Trong 14 ngày</option>
+            </select>
+          </label>
+          <label class="favorite-toggle"><input id="favorites-only" type="checkbox" /><span class="switch" aria-hidden="true"></span><span>Món yêu thích</span></label>
+          <div class="filter-note" id="filter-note">Món mới được ưu tiên</div>
+        </section>
+
+        <section class="view-panel is-visible" id="wheel-view" aria-labelledby="wheel-title">
+          <div class="section-heading">
+            <div><h2 id="wheel-title">Vòng quay may mắn</h2></div>
+            <span class="available-count" id="wheel-available"></span>
+          </div>
+          <div class="wheel-layout">
+            <div class="card wheel-card">
+              <div class="wheel-stage">
+                <div class="wheel-pointer" aria-hidden="true"></div>
+                <canvas id="wheel-canvas" width="640" height="640" aria-label="Vòng quay gồm các món hiện có"></canvas>
+                <button class="wheel-center" type="button" id="spin-button" aria-label="Quay vòng chọn món"><span>Quay</span><small>chọn món</small></button>
+              </div>
+              <div class="wheel-caption"><div class="wheel-legend" id="wheel-legend"></div><span class="wheel-caption-note">Mỗi món có cơ hội ngang nhau</span></div>
+            </div>
+            <aside class="wheel-side">
+              <div class="card result-card" id="wheel-result-card">
+                <div class="result-label"><span class="result-spark" aria-hidden="true">✳</span> Món được chọn</div>
+                <div class="result-placeholder" id="wheel-placeholder"><strong>Sẵn sàng chưa?</strong><span>Bấm quay để tìm món cho hôm nay.</span></div>
+                <div class="result-content" id="wheel-result" hidden>
+                  <span class="result-method" id="wheel-result-method"></span>
+                  <h3 id="wheel-result-name"></h3>
+                  <button class="favorite-result" id="wheel-favorite" type="button"></button>
+                </div>
+                <div class="result-actions" id="wheel-actions" hidden>
+                  <button class="button button-primary" id="confirm-wheel" type="button">Chốt món này</button>
+                  <button class="button button-outline" id="reroll-wheel" type="button">Quay lại</button>
+                </div>
+              </div>
+              <div class="card wheel-list-card">
+                <div class="mini-card-heading"><strong>Các món đang quay</strong><span class="list-count" id="wheel-list-count">0</span></div>
+                <ol class="wheel-list" id="wheel-list"></ol>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view-panel" id="battle-view" aria-labelledby="battle-title" hidden>
+          <div class="section-heading">
+            <div><h2 id="battle-title">Đấu món cùng cả nhà</h2></div>
+            <span class="available-count" id="battle-available"></span>
+          </div>
+          <div class="card battle-card">
+            <div class="battle-intro">
+              <div class="battle-icon" aria-hidden="true">vs</div>
+              <div><h3>Để các món tự tranh tài</h3><p>Bốc ngẫu nhiên một nhóm món. Chọn món bạn thích hơn qua từng lượt để tìm ra quán quân.</p></div>
+            </div>
+            <div class="battle-controls" id="battle-controls">
+              <div class="candidate-choice" role="group" aria-label="Số món dự thi">
+                <span>Số món tham gia</span>
+                <button type="button" class="candidate-size is-selected" data-size="4">4</button>
+                <button type="button" class="candidate-size" data-size="8">8</button>
+                <button type="button" class="candidate-size" data-size="16">16</button>
+              </div>
+              <button class="button button-primary start-battle" id="start-battle" type="button">Bắt đầu đấu</button>
+            </div>
+            <div class="battle-arena" id="battle-arena" hidden></div>
+          </div>
+        </section>
+
+        <section class="view-panel" id="meal-view" aria-labelledby="meal-title" hidden>
+          <div class="section-heading">
+            <div><h2 id="meal-title">Lập mâm cơm</h2></div>
+            <button class="button button-quiet" id="shuffle-meal" type="button">⟳ Đổi cả mâm</button>
+          </div>
+          <div class="meal-grid" id="meal-grid"></div>
+          <div class="meal-footer">
+            <p id="meal-hint">Mỗi vai trò món ăn được chọn riêng và tránh trùng món gần đây.</p>
+            <button class="button button-primary" id="confirm-meal" type="button">Chốt mâm cơm</button>
+          </div>
+        </section>
+
+        <section class="history-section">
+          <div class="history-heading"><h2>Lịch sử món ăn</h2><button class="text-button" id="clear-history" type="button">Xóa lịch sử</button></div>
+          <div class="history-list" id="history-list"></div>
+        </section>
+      </main>
+      <footer class="app-footer"><span>Được nấu từ sự ngẫu nhiên <span class="footer-heart">♥</span></span><button class="text-button" id="export-data" type="button">Tải danh sách món (CSV)</button></footer>
+    </div>
+
+    <dialog class="manage-dialog" id="manage-dialog" aria-labelledby="manage-title">
+      <div class="dialog-header"><h2 id="manage-title">Quản lý món nhà mình</h2><button class="icon-button" id="close-manage" type="button" aria-label="Đóng">×</button></div>
+      <div class="dialog-content">
+        <div class="data-tools">
+          <p>Thêm món mới hoặc chỉnh <strong>vai trò trong mâm cơm</strong>. Ảnh hiện có chủ yếu là món chính; hãy nhập thêm món rau và canh của gia đình.</p>
+          <div class="csv-actions">
+            <button class="button button-outline" id="reload-starter" type="button">Nạp lại từ CSV</button>
+            <label class="button button-outline import-button">Nhập CSV / JSON<input id="import-file" type="file" accept=".csv,.json,text/csv,application/json" hidden /></label>
+          </div>
+        </div>
+        <section class="category-manager" aria-label="Quản lý cách nấu và vai trò">
+          <details>
+            <summary>Quản lý cách nấu và vai trò món</summary>
+            <p class="category-help">Thêm nhóm theo cách nấu. Chọn “Trong mâm” cho những vai trò muốn có ô riêng khi lập mâm.</p>
+            <div class="category-columns">
+              <section class="category-group" aria-labelledby="method-category-title">
+                <h3 id="method-category-title">Cách nấu</h3>
+                <form class="category-form" id="method-category-form">
+                  <label class="visually-hidden" for="method-category-name">Tên cách nấu mới</label>
+                  <input id="method-category-name" maxlength="50" placeholder="Ví dụ: Hấp" required />
+                  <button class="button button-quiet" type="submit">Thêm</button>
+                </form>
+                <div class="category-list" id="method-category-list"></div>
+              </section>
+              <section class="category-group" aria-labelledby="role-category-title">
+                <h3 id="role-category-title">Vai trò món</h3>
+                <form class="category-form" id="role-category-form">
+                  <label class="visually-hidden" for="role-category-name">Tên vai trò mới</label>
+                  <input id="role-category-name" maxlength="50" placeholder="Ví dụ: Món tráng miệng" required />
+                  <button class="button button-quiet" type="submit">Thêm</button>
+                </form>
+                <div class="category-list" id="role-category-list"></div>
+              </section>
+            </div>
+          </details>
+        </section>
+        <form class="dish-form" id="dish-form">
+          <input id="dish-id" type="hidden" />
+          <label class="field-name">Tên món<input id="dish-name" name="name" placeholder="Ví dụ: Canh bí đỏ nấu tôm" required maxlength="90" /></label>
+          <label>Cách nấu<select id="dish-method" name="method"><option>Kho / Rim</option><option>Xào / Rang / Sốt</option><option>Khác</option></select></label>
+          <label>Vai trò<select id="dish-role" name="role"><option value="main">Món chính</option><option value="vegetable">Món rau</option><option value="soup">Món canh</option><option value="other">Món khác</option></select></label>
+          <button class="button button-primary form-submit" type="submit" id="save-dish">Thêm món</button>
+          <button class="button button-quiet form-cancel" type="button" id="cancel-edit" hidden>Hủy sửa</button>
+        </form>
+        <div class="manage-list-heading"><strong>Danh sách món</strong><span id="manage-count"></span></div>
+        <div class="manage-list" id="manage-list"></div>
+        <div class="import-hint"><strong>Định dạng CSV:</strong> <code>id,name,method,role,favorite</code>. Cột <code>id</code> là tùy chọn; file cũ dùng <code>group</code> vẫn đọc được.</div>
+      </div>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
